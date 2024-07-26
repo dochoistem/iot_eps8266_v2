@@ -1,15 +1,23 @@
-input.onButtonPressed(Button.A, function () {
-    if (blue_led_status == false) {
+DoChoiSTEM.MqttEvent("dct/led", function (message) {
+    if (message == "t") {
         Turn_on_the_LED()
-        DoChoiSTEM.mqtt_publish("B", "t", DoChoiSTEM.QosList.Qos2)
+    }
+    if (message == "f") {
+        Turn_off_the_LED()
+    }
+})
+input.onButtonPressed(Button.A, function () {
+    if (flag_led_status == false) {
+        Turn_on_the_LED()
+        DoChoiSTEM.mqtt_publish("dct/led", "t", DoChoiSTEM.QosList.Qos2)
     } else {
         Turn_off_the_LED()
-        DoChoiSTEM.mqtt_publish("B", "f", DoChoiSTEM.QosList.Qos2)
+        DoChoiSTEM.mqtt_publish("dct/led", "f", DoChoiSTEM.QosList.Qos2)
     }
 })
 function Turn_off_the_LED () {
     pins.digitalWritePin(DigitalPin.P1, 0)
-    blue_led_status = false
+    flag_led_status = false
 }
 input.onButtonPressed(Button.B, function () {
     if (DoChoiSTEM.wifiState(true)) {
@@ -32,17 +40,9 @@ input.onButtonPressed(Button.B, function () {
         }
     }
 })
-DoChoiSTEM.MqttEvent("B", function (message) {
-    if (message == "t") {
-        Turn_on_the_LED()
-    }
-    if (message == "f") {
-        Turn_off_the_LED()
-    }
-})
 function Turn_on_the_LED () {
     pins.digitalWritePin(DigitalPin.P1, 1)
-    blue_led_status = true
+    flag_led_status = true
 }
 input.onLogoEvent(TouchButtonEvent.Pressed, function () {
     DoChoiSTEM.updateInternetTime()
@@ -55,10 +55,10 @@ input.onLogoEvent(TouchButtonEvent.Pressed, function () {
         basic.showNumber(DoChoiSTEM.getMinute())
     }
 })
-let blue_led_status = false
+let flag_led_status = false
 let data = 0
 data = 0
-blue_led_status = false
+flag_led_status = false
 DoChoiSTEM.initWIFI(SerialPin.P8, SerialPin.P2, BaudRate.BaudRate115200)
 basic.showString(DoChoiSTEM.getFirmware())
 let flag_state = 1
@@ -91,12 +91,12 @@ while (flag_state <= 6) {
             flag_state = 4
         }
     } else if (flag_state == 4) {
-        DoChoiSTEM.mqtt_subscribe("B", DoChoiSTEM.QosList.Qos2)
+        DoChoiSTEM.mqtt_subscribe("dct/led", DoChoiSTEM.QosList.Qos2)
         if (DoChoiSTEM.getATCommandreply() == "OK") {
             flag_state = 5
         }
     } else if (flag_state == 5) {
-        DoChoiSTEM.mqtt_publish("B", convertToText(blue_led_status).substr(0, 1), DoChoiSTEM.QosList.Qos2)
+        DoChoiSTEM.mqtt_publish("dct/led", convertToText(flag_led_status).substr(0, 1), DoChoiSTEM.QosList.Qos2)
         flag_state = 6
     } else if (flag_state == 6) {
         DoChoiSTEM.initInternetTime(7)
