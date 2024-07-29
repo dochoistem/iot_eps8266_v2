@@ -6,10 +6,6 @@ namespace DoChoiSTEM {
     	let internetTimeInitialized = false
 	let internetTimeUpdated = false
 	let year = 0, month = 0, day = 0, weekday = 0, hour = 0, minute = 0, second = 0
-    	const EVENT_ON_ID = 100
-    	const EVENT_ON_Value = 200
-    	const EVENT_OFF_ID = 110
-    	const EVENT_OFF_Value = 210
 	const NTP_SERVER_URL = "pool.ntp.org"
 	const mqttSubscribeHandlers: { [topic: string]: (message: string) => void } = {}
     	let toSendStr = ""
